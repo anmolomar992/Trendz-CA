@@ -50,7 +50,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'main.middleware.AdminMiddleware',  # Our custom middleware for admin redirection
+    'main.middleware.AdminMiddleware', 
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Our custom middleware for admin redirection
 ]
 
 ROOT_URLCONF = 'barbershop.urls'
@@ -109,6 +110,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
