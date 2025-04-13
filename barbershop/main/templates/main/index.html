@@ -1,0 +1,185 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <h1 class="display-4 fw-bold">Experience <span class="gold-text">Trendz</span> Styling</h1>
+                        <p class="lead">Where creativity meets elegance. Premium hair styling services for everyone.</p>
+                        <a href="{% url 'booking' %}" class="btn btn-gold btn-lg">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="about-image-container">
+                        <i class="fas fa-cut about-icon"></i>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="section-title mb-4">
+                        <h2>About <span class="gold-text">Trendz Hair Salon</span></h2>
+                    </div>
+                    <p class="mb-4">Founded in 2015, Trendz Hair Salon has established itself as the premier destination for hair styling in Punjab. Our stylists combine traditional techniques with modern styling to create looks that are both elegant and contemporary.</p>
+                    <p class="mb-4">At Trendz, we believe that everyone deserves top-quality hair care. Our premium services are designed to pamper you while delivering exceptional results. From stylish haircuts to luxury treatments and coloring, we offer a comprehensive range of services to meet all your styling needs.</p>
+                    <div class="achievements row text-center">
+                        <div class="col-4">
+                            <h3 class="achievement-number">10+</h3>
+                            <p>Years Experience</p>
+                        </div>
+                        <div class="col-4">
+                            <h3 class="achievement-number">15+</h3>
+                            <p>Expert Stylists</p>
+                        </div>
+                        <div class="col-4">
+                            <h3 class="achievement-number">50K+</h3>
+                            <p>Happy Clients</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services-section py-5 bg-light">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h2>Our Premium <span class="gold-text">Services</span></h2>
+                <p class="lead">Experience the finest hair styling services for all ages and styles</p>
+            </div>
+            <div class="row">
+                {% if services %}
+                    {% for service in services %}
+                        <div class="col-md-4 mb-4">
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class="fas fa-cut"></i>
+                                </div>
+                                <h3>{{ service.name }}</h3>
+                                <p>{{ service.description }}</p>
+                                <div class="service-price">{{ service.formatted_price }}</div>
+                                <a href="{% url 'service_detail' service.id %}" class="btn btn-outline-gold">Learn More</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center">
+                        <p>No services available at the moment. Please check back later.</p>
+                    </div>
+                {% endif %}
+                <div class="col-12 text-center mt-4">
+                    <a href="{% url 'services' %}" class="btn btn-gold">View All Services</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Stylists Section -->
+    <section class="stylists-section py-5">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h2>Our Expert <span class="gold-text">Stylists</span></h2>
+                <p class="lead">Meet our team of highly skilled and experienced hair stylists</p>
+            </div>
+            <div class="row">
+                {% if stylists %}
+                    {% for stylist in stylists %}
+                        <div class="col-md-3 mb-4">
+                            <div class="stylist-card">
+                                <div class="stylist-image">
+                                    {% if stylist.profile_image %}
+                                        <img src="{{ stylist.profile_image }}" alt="{{ stylist.name }}">
+                                    {% else %}
+                                        <i class="fas fa-user-tie stylist-placeholder"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="stylist-info">
+                                    <h3>{{ stylist.name }}</h3>
+                                    <p class="stylist-title">Hair Stylist</p>
+                                    <p class="experience">{{ stylist.experience_years }} Years Experience</p>
+                                    <a href="{% url 'stylist_detail' stylist.id %}" class="btn btn-outline-gold btn-sm">View Profile</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center">
+                        <p>No stylists available at the moment. Please check back later.</p>
+                    </div>
+                {% endif %}
+                <div class="col-12 text-center mt-4">
+                    <a href="{% url 'stylists' %}" class="btn btn-gold">Meet All Stylists</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section py-5 bg-dark text-white">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h2>Client <span class="gold-text">Testimonials</span></h2>
+                <p class="lead">What our satisfied customers have to say</p>
+            </div>
+            <div class="row">
+                {% if reviews %}
+                    {% for review in reviews %}
+                        <div class="col-md-4 mb-4">
+                            <div class="testimonial-card">
+                                <div class="testimonial-rating">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <p class="testimonial-text">{{ review.comment }}</p>
+                                <div class="testimonial-author">
+                                    <i class="fas fa-user-circle testimonial-avatar"></i>
+                                    <div>
+                                        <h5>Satisfied Customer</h5>
+                                        <p class="testimonial-date">{{ review.created_at|date:"F d, Y" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center">
+                        <p>No reviews available at the moment. Be the first to share your experience!</p>
+                    </div>
+                {% endif %}
+                <div class="col-12 text-center mt-4">
+                    <a href="{% url 'reviews' %}" class="btn btn-gold">View All Reviews</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking CTA Section -->
+    <section class="booking-cta-section py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 mb-4 mb-lg-0">
+                    <h2>Ready for a <span class="gold-text">Stunning Look?</span></h2>
+                    <p class="lead mb-0">Book your appointment today and experience premium hair styling services.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a href="{% url 'booking' %}" class="btn btn-gold btn-lg">Book Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

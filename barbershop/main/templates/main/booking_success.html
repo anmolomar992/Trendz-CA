@@ -1,0 +1,104 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1>Booking <span class="gold-text">Successful!</span></h1>
+            <p class="lead">Your appointment has been confirmed</p>
+        </div>
+    </div>
+
+    <!-- Success Message Section -->
+    <section class="content-section py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="success-card text-center">
+                        <div class="success-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h2>Thank You for Your Booking</h2>
+                        <p class="lead">Your appointment has been scheduled successfully.</p>
+                        <p>We've sent a confirmation to your contact information. Our team is looking forward to providing you with a premium hair styling experience.</p>
+                        
+                        <div class="success-actions mt-5">
+                            {% if user %}
+                                <a href="{% url 'profile' %}" class="btn btn-gold me-3">View My Appointments</a>
+                            {% endif %}
+                            <a href="{% url 'home' %}" class="btn btn-outline-gold">Return to Home</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What to Expect Section -->
+    <section class="expectations-section py-5 bg-light">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h2>What to <span class="gold-text">Expect</span></h2>
+                <p class="lead">Preparing for your premium hair styling experience</p>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="expectation-card">
+                        <div class="expectation-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>Arrive on Time</h3>
+                        <p>Please arrive 10 minutes before your scheduled appointment to ensure a smooth experience.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="expectation-card">
+                        <div class="expectation-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>Bring Reference</h3>
+                        <p>Feel free to bring pictures or references of your desired style to help communicate your vision.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="expectation-card">
+                        <div class="expectation-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3>Rescheduling</h3>
+                        <p>Need to reschedule? Please give us at least 24 hours notice by calling our shop directly.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Location Section -->
+    <section class="location-section py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="section-title mb-4">
+                        <h2>Our <span class="gold-text">Location</span></h2>
+                    </div>
+                    <div class="location-info">
+                        <p><i class="fas fa-map-marker-alt me-2 gold-text"></i> Satnampura Phagwara, 30, Nehru Nagar, Phagwara, Punjab 144401</p>
+                        <p><i class="fas fa-envelope me-2 gold-text"></i> info@trendzhairstyle.com</p>
+                        <div class="business-hours mt-4">
+                            <h4>Business Hours</h4>
+                            <p><i class="fas fa-clock me-2 gold-text"></i> Monday - Friday: 9:00 AM - 8:00 PM</p>
+                            <p><i class="fas fa-clock me-2 gold-text"></i> Saturday: 10:00 AM - 6:00 PM</p>
+                            <p><i class="fas fa-clock me-2 gold-text"></i> Sunday: 10:00 AM - 4:00 PM</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="location-map-placeholder">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <p>Satnampura Phagwara, 30, Nehru Nagar, Phagwara, Punjab 144401</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

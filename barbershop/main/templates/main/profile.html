@@ -1,0 +1,135 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1>My <span class="gold-text">Profile</span></h1>
+            <p class="lead">Manage your account and view your appointment history</p>
+        </div>
+    </div>
+
+    <!-- Profile Section -->
+    <section class="content-section py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Profile Information -->
+                <div class="col-lg-4 mb-4">
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="profile-avatar">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <h3>{{ user.username }}</h3>
+                            <p class="profile-role">{{ user.role|title }}</p>
+                        </div>
+                        <div class="profile-details">
+                            <div class="profile-item">
+                                <div class="profile-label">Email</div>
+                                <div class="profile-value">{{ user.email|default:"Not provided" }}</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="profile-label">Phone</div>
+                                <div class="profile-value">{{ user.phone_number }}</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="profile-label">Member Since</div>
+                                <div class="profile-value">{{ user.created_at|date:"F d, Y"|default:"N/A" }}</div>
+                            </div>
+                        </div>
+                        <div class="profile-actions">
+                            <a href="{% url 'booking' %}" class="btn btn-gold">Book Appointment</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appointments History -->
+                <div class="col-lg-8">
+                    <div class="appointments-card">
+                        <div class="appointments-header">
+                            <h3>My Appointments</h3>
+                        </div>
+                        <div class="appointments-body">
+                            {% if appointments %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Service</th>
+                                                <th>Stylist</th>
+                                                <th>Date & Time</th>
+                                                <th>Price</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for appointment in appointments %}
+                                                <tr>
+                                                    <td>{% if appointment.service_name %}{{ appointment.service_name }}{% else %}Service #{{ appointment.service_id }}{% endif %}</td>
+                                                    <td>{% if appointment.stylist_name %}{{ appointment.stylist_name }}{% else %}Stylist #{{ appointment.stylist_id }}{% endif %}</td>
+                                                    <td>{{ appointment.date }} at {{ appointment.time }}</td>
+                                                    <td>{{ appointment.service_price|default:"N/A" }}</td>
+                                                    <td>
+                                                        <span class="badge {% if appointment.status == 'scheduled' %}bg-primary{% elif appointment.status == 'completed' %}bg-success{% elif appointment.status == 'canceled' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                                            {{ appointment.status|title }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="empty-state">
+                                    <i class="fas fa-calendar-times empty-icon"></i>
+                                    <h4>No Appointments</h4>
+                                    <p>You haven't made any appointments yet.</p>
+                                    <a href="{% url 'booking' %}" class="btn btn-gold mt-3">Book Now</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Membership Benefits -->
+    <section class="membership-section py-5 bg-light">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h2>Membership <span class="gold-text">Benefits</span></h2>
+                <p class="lead">Enjoy these exclusive perks as a Trendz Hair Salon member</p>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h4>Easy Booking</h4>
+                        <p>Quickly book appointments and manage your schedule online anytime.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h4>Appointment History</h4>
+                        <p>Track all your previous appointments and services in one place.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h4>Exclusive Promotions</h4>
+                        <p>Get access to special offers and promotions only available to members.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

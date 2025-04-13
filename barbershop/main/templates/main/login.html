@@ -1,0 +1,50 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <section class="auth-section py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="auth-card">
+                        <div class="auth-header text-center">
+                            <h2>Welcome Back to <span class="gold-text">Trendz Hair Salon</span></h2>
+                            <p>Login to your account to book appointments and manage your profile.</p>
+                        </div>
+                        <form method="post" class="auth-form">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.username.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-4">
+                                <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                                {{ form.password }}
+                                {% if form.password.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.password.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-gold btn-lg">Login</button>
+                            </div>
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger mt-3">
+                                    {{ form.non_field_errors.0 }}
+                                </div>
+                            {% endif %}
+                        </form>
+                        <div class="auth-footer text-center mt-4">
+                            <p>Don't have an account? <a href="{% url 'signup' %}" class="gold-text">Sign up</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

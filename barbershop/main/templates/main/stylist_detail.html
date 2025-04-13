@@ -1,0 +1,160 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1>Stylist <span class="gold-text">Profile</span></h1>
+            <p class="lead">Learn more about our expert hair stylist</p>
+        </div>
+    </div>
+
+    <!-- Stylist Detail Section -->
+    <section class="content-section py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Stylist Profile -->
+                <div class="col-lg-4 mb-4">
+                    <div class="stylist-detail-card">
+                        <div class="stylist-detail-image">
+                            {% if stylist.profile_image %}
+                                <img src="{{ stylist.profile_image }}" alt="{{ stylist.name }}">
+                            {% else %}
+                                <i class="fas fa-user-tie stylist-detail-placeholder"></i>
+                            {% endif %}
+                        </div>
+                        <div class="stylist-detail-info">
+                            <h2>{{ stylist.name }}</h2>
+                            <p class="stylist-title">Hair Stylist</p>
+                            <div class="stylist-experience">
+                                <span class="experience-years">{{ stylist.experience_years }}</span>
+                                <span class="experience-text">Years Experience</span>
+                            </div>
+                            <a href="{% url 'booking' %}" class="btn btn-gold mt-3">Book with {{ stylist.name }}</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stylist Bio and Services -->
+                <div class="col-lg-8">
+                    <div class="stylist-detail-content">
+                        <div class="stylist-bio mb-5">
+                            <h3>About {{ stylist.name }}</h3>
+                            <p>{{ stylist.bio }}</p>
+                        </div>
+
+                        <div class="stylist-specialties mb-5">
+                            <h3>Specialties</h3>
+                            {% if stylist.services %}
+                                <div class="row">
+                                    {% for service in stylist.services %}
+                                        <div class="col-md-6 mb-3">
+                                            <div class="specialty-item">
+                                                <div class="specialty-icon">
+                                                    <i class="fas fa-cut"></i>
+                                                </div>
+                                                <div class="specialty-info">
+                                                    <h4>{{ service.name }}</h4>
+                                                    <p class="specialty-price">{{ service.formatted_price }}</p>
+                                                    <p class="specialty-duration">{{ service.duration }} min</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p>No specialties listed for this stylist.</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Stylist Reviews -->
+                        <div class="stylist-reviews">
+                            <h3>Client Reviews</h3>
+                            
+                            <!-- Review submission form for logged-in users -->
+                            {% if user and form %}
+                                <div class="review-form-container mb-4 p-4 bg-light rounded">
+                                    <h4>Leave a Review for {{ stylist.name }}</h4>
+                                    <form method="post" class="review-form">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="{{ form.rating.id_for_label }}" class="form-label">Rating</label>
+                                            <div class="rating-select">
+                                                {{ form.rating }}
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="{{ form.comment.id_for_label }}" class="form-label">Your Review</label>
+                                            {{ form.comment }}
+                                        </div>
+                                        <button type="submit" class="btn btn-gold">Submit Review</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Display existing reviews -->
+                            {% if reviews %}
+                                <div class="row">
+                                    {% for review in reviews %}
+                                        {% if review.is_approved %}
+                                            <div class="col-md-6 mb-4">
+                                                <div class="review-card">
+                                                    <div class="review-rating">
+                                                        {% for i in "12345" %}
+                                                            {% if forloop.counter <= review.rating %}
+                                                                <i class="fas fa-star"></i>
+                                                            {% else %}
+                                                                <i class="far fa-star"></i>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                    <p class="review-text">{{ review.comment }}</p>
+                                                    <div class="review-date">{{ review.created_at|date:"F d, Y" }}</div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">No reviews yet for this stylist.</div>
+                            {% endif %}
+                            
+                            {% if not user %}
+                                <div class="mt-3">
+                                    <p>Please <a href="{% url 'login' %}" class="gold-text">login</a> to leave a review for this stylist.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Other Stylists Section -->
+    <section class="related-section py-5 bg-light">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h2>Meet Our Other <span class="gold-text">Stylists</span></h2>
+            </div>
+            <div class="text-center">
+                <a href="{% url 'stylists' %}" class="btn btn-gold">View All Stylists</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking CTA Section -->
+    <section class="booking-cta-section py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 mb-4 mb-lg-0">
+                    <h2>Ready to Book with <span class="gold-text">{{ stylist.name }}?</span></h2>
+                    <p class="lead mb-0">Schedule your appointment today for a premium hair styling experience.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a href="{% url 'booking' %}" class="btn btn-gold btn-lg">Book Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

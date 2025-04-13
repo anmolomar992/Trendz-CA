@@ -1,0 +1,106 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1>Our Expert <span class="gold-text">Stylists</span></h1>
+            <p class="lead">Meet our team of highly skilled hair stylists with years of experience</p>
+        </div>
+    </div>
+
+    <!-- Stylists Section -->
+    <section class="content-section py-5">
+        <div class="container">
+            {% if stylists %}
+                <div class="row">
+                    {% for stylist in stylists %}
+                        <div class="col-md-6 col-lg-4 mb-5">
+                            <div class="stylist-card-large">
+                                <div class="stylist-image">
+                                    {% if stylist.profile_image %}
+                                        <img src="{{ stylist.profile_image }}" alt="{{ stylist.name }}">
+                                    {% else %}
+                                        <i class="fas fa-user-tie stylist-placeholder"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="stylist-info">
+                                    <h3>{{ stylist.name }}</h3>
+                                    <p class="stylist-title">Hair Stylist</p>
+                                    <div class="stylist-experience">
+                                        <span class="experience-years">{{ stylist.experience_years }}</span>
+                                        <span class="experience-text">Years Experience</span>
+                                    </div>
+                                    <p class="stylist-bio">{{ stylist.bio|truncatechars:100 }}</p>
+                                    <a href="{% url 'stylist_detail' stylist.id %}" class="btn btn-gold">View Profile</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center my-5">
+                    <div class="empty-state">
+                        <i class="fas fa-user-tie empty-icon"></i>
+                        <h3>No Stylists Available</h3>
+                        <p>We're currently updating our team information. Please check back soon!</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Why Choose Our Stylists Section -->
+    <section class="features-section py-5 bg-light">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h2>Why Choose Our <span class="gold-text">Stylists</span></h2>
+                <p class="lead">What sets our hair stylists apart</p>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <h3>Certified Professionals</h3>
+                        <p>All our stylists are certified professionals with extensive training in traditional and modern hair styling techniques.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <h3>Years of Experience</h3>
+                        <p>Our team brings years of hands-on experience, ensuring you get the best hair styling service possible.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <h3>Continuous Training</h3>
+                        <p>We invest in continuous education to stay updated with the latest trends and techniques in hair styling and coloring.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking CTA Section -->
+    <section class="booking-cta-section py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 mb-4 mb-lg-0">
+                    <h2>Ready to Meet Our <span class="gold-text">Expert Stylists?</span></h2>
+                    <p class="lead mb-0">Book your appointment today with one of our professional hair stylists.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a href="{% url 'booking' %}" class="btn btn-gold btn-lg">Book Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

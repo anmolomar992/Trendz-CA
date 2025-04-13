@@ -1,0 +1,276 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <!-- Admin Dashboard Header -->
+    <div class="page-header admin-header">
+        <div class="container">
+            <h1>Manage <span class="gold-text">Stylists</span></h1>
+            <p class="lead">Add and edit your professional barber team</p>
+        </div>
+    </div>
+
+    <!-- Admin Navigation -->
+    <div class="admin-navigation bg-dark">
+        <div class="container">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard' %}">Overview</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_appointments' %}">Appointments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_services' %}">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'dashboard_stylists' %}">Stylists</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_reviews' %}">Reviews</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <section class="admin-content py-5">
+        <div class="container">
+            <!-- Add/Edit Stylist Form -->
+            <div class="row mb-5">
+                <div class="col-lg-12">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3 id="form-title">Add New Stylist</h3>
+                        </div>
+                        <div class="admin-card-body">
+                            <form method="post" id="stylist-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="stylist_id" id="stylist_id" value="">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.name.id_for_label }}" class="form-label">Stylist Name</label>
+                                        {{ form.name }}
+                                        {% if form.name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.name.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.experience_years.id_for_label }}" class="form-label">Years of Experience</label>
+                                        {{ form.experience_years }}
+                                        {% if form.experience_years.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.experience_years.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="{{ form.bio.id_for_label }}" class="form-label">Bio</label>
+                                    {{ form.bio }}
+                                    {% if form.bio.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.bio.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="{{ form.profile_image.id_for_label }}" class="form-label">Profile Image URL</label>
+                                    {{ form.profile_image }}
+                                    <div class="form-text">Enter a URL for the stylist's profile image. Leave blank for default avatar.</div>
+                                    {% if form.profile_image.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.profile_image.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3 form-check">
+                                    {{ form.is_active }}
+                                    <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                        Active (visible to customers)
+                                    </label>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Services Offered</label>
+                                    <div class="services-checkboxes">
+                                        {% if services %}
+                                            {% for service in services %}
+                                                <div class="form-check">
+                                                    <input class="form-check-input service-checkbox" type="checkbox" 
+                                                        name="{{ form.services.name }}" value="{{ service.id }}" 
+                                                        id="service_{{ service.id }}">
+                                                    <label class="form-check-label" for="service_{{ service.id }}">
+                                                        {{ service.name }} ({{ service.formatted_price|default:"" }})
+                                                    </label>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="alert alert-info">
+                                                No services available. <a href="{% url 'dashboard_services' %}">Add services</a> first.
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <button type="submit" class="btn btn-gold me-2">Save Stylist</button>
+                                    <button type="button" id="reset-form" class="btn btn-outline-secondary">Reset</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stylists List -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3>All Stylists</h3>
+                        </div>
+                        <div class="admin-card-body">
+                            {% if stylists %}
+                                <div class="row">
+                                    {% for stylist in stylists %}
+                                        <div class="col-md-6 col-lg-4 mb-4">
+                                            <div class="stylist-admin-card">
+                                                <div class="stylist-admin-header">
+                                                    <div class="stylist-admin-image">
+                                                        {% if stylist.profile_image %}
+                                                            <img src="{{ stylist.profile_image }}" alt="{{ stylist.name }}">
+                                                        {% else %}
+                                                            <i class="fas fa-user-tie"></i>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="stylist-admin-info">
+                                                        <h4>{{ stylist.name }}</h4>
+                                                        <p>{{ stylist.experience_years }} Years Experience</p>
+                                                        <span class="badge {% if stylist.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                                            {% if stylist.is_active %}Active{% else %}Inactive{% endif %}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="stylist-admin-bio">
+                                                    <p>{{ stylist.bio|truncatechars:100 }}</p>
+                                                </div>
+                                                <div class="stylist-admin-services">
+                                                    <h5>Services:</h5>
+                                                    {% if stylist.service_ids %}
+                                                        <div class="service-tags">
+                                                            {% for service in services %}
+                                                                {% if service.id in stylist.service_ids %}
+                                                                    <span class="service-tag">{{ service.name }}</span>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <p class="text-muted">No services assigned</p>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="stylist-admin-actions">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary edit-stylist-btn" 
+                                                            data-id="{{ stylist.id }}"
+                                                            data-name="{{ stylist.name }}"
+                                                            data-bio="{{ stylist.bio }}"
+                                                            data-image="{{ stylist.profile_image|default:'' }}"
+                                                            data-experience="{{ stylist.experience_years }}"
+                                                            data-active="{{ stylist.is_active|yesno:'true,false' }}"
+                                                            data-services="{{ stylist.service_ids|join:',' }}">
+                                                        Edit
+                                                    </button>
+                                                    <a href="{% url 'stylist_detail' stylist.id %}" class="btn btn-sm btn-outline-secondary" target="_blank">
+                                                        View Profile
+                                                    </a>
+                                                    <a href="{% url 'delete_stylist' stylist.id %}" class="btn btn-sm btn-outline-danger"
+                                                       onclick="return confirmDelete('Are you sure you want to delete {{ stylist.name }}?')">
+                                                        Delete
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">No stylists found. Add your first stylist using the form above.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('stylist-form');
+        const formTitle = document.getElementById('form-title');
+        const stylistIdField = document.getElementById('stylist_id');
+        const nameField = document.getElementById('{{ form.name.id_for_label }}');
+        const bioField = document.getElementById('{{ form.bio.id_for_label }}');
+        const imageField = document.getElementById('{{ form.profile_image.id_for_label }}');
+        const experienceField = document.getElementById('{{ form.experience_years.id_for_label }}');
+        const activeField = document.getElementById('{{ form.is_active.id_for_label }}');
+        const serviceCheckboxes = document.querySelectorAll('.service-checkbox');
+        const resetBtn = document.getElementById('reset-form');
+        const editBtns = document.querySelectorAll('.edit-stylist-btn');
+        
+        // Function to reset the form
+        function resetForm() {
+            formTitle.textContent = 'Add New Stylist';
+            stylistIdField.value = '';
+            form.reset();
+            // Uncheck all service checkboxes
+            serviceCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+        
+        // Reset button click handler
+        if (resetBtn) {
+            resetBtn.addEventListener('click', resetForm);
+        }
+        
+        // Edit button click handlers
+        if (editBtns) {
+            editBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const name = this.getAttribute('data-name');
+                    const bio = this.getAttribute('data-bio');
+                    const image = this.getAttribute('data-image');
+                    const experience = this.getAttribute('data-experience');
+                    const active = this.getAttribute('data-active') === 'true';
+                    const services = this.getAttribute('data-services').split(',').filter(Boolean);
+                    
+                    // Populate form with stylist data
+                    formTitle.textContent = 'Edit Stylist';
+                    stylistIdField.value = id;
+                    nameField.value = name;
+                    bioField.value = bio;
+                    imageField.value = image;
+                    experienceField.value = experience;
+                    activeField.checked = active;
+                    
+                    // Reset all service checkboxes first
+                    serviceCheckboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    
+                    // Check the services this stylist offers
+                    serviceCheckboxes.forEach(checkbox => {
+                        if (services.includes(checkbox.value)) {
+                            checkbox.checked = true;
+                        }
+                    });
+                    
+                    // Scroll to form
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

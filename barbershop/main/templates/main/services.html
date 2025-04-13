@@ -1,0 +1,92 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1>Our Premium <span class="gold-text">Services</span></h1>
+            <p class="lead">Experience the finest hair styling services for all ages and styles</p>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <section class="content-section py-5">
+        <div class="container">
+            {% if categorized_services %}
+                <div class="row mb-4">
+                    <div class="col-md-8 offset-md-2">
+                        <div class="service-nav">
+                            <ul class="nav nav-pills justify-content-center" id="services-tab" role="tablist">
+                                {% for category_name in categorized_services.keys %}
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link {% if forloop.first %}active{% endif %}" 
+                                                id="tab-{{ forloop.counter }}" 
+                                                data-bs-toggle="pill" 
+                                                data-bs-target="#content-{{ forloop.counter }}" 
+                                                type="button" 
+                                                role="tab" 
+                                                aria-controls="content-{{ forloop.counter }}" 
+                                                aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                                            {{ category_name }}
+                                        </button>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="services-tabContent">
+                    {% for category_name, services in categorized_services.items %}
+                        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
+                             id="content-{{ forloop.counter }}" 
+                             role="tabpanel" 
+                             aria-labelledby="tab-{{ forloop.counter }}">
+                            <div class="row">
+                                {% for service in services %}
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                                        <div class="service-card">
+                                            <div class="service-icon">
+                                                <i class="fas fa-cut"></i>
+                                            </div>
+                                            <h3>{{ service.name }}</h3>
+                                            <p>{{ service.description }}</p>
+                                            <div class="service-details">
+                                                <div class="service-price">{{ service.formatted_price }}</div>
+                                                <div class="service-duration">{{ service.duration }} min</div>
+                                            </div>
+                                            <a href="{% url 'service_detail' service.id %}" class="btn btn-outline-gold">View Details</a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center my-5">
+                    <div class="empty-state">
+                        <i class="fas fa-cut empty-icon"></i>
+                        <h3>No Services Available</h3>
+                        <p>We're currently updating our service offerings. Please check back soon!</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Booking CTA Section -->
+    <section class="booking-cta-section py-5 bg-dark text-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 mb-4 mb-lg-0">
+                    <h2>Ready for a <span class="gold-text">Stunning Look?</span></h2>
+                    <p class="lead mb-0">Book your appointment today and experience premium hair styling services.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a href="{% url 'booking' %}" class="btn btn-gold btn-lg">Book Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

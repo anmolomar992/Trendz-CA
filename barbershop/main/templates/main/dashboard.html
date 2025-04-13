@@ -1,0 +1,167 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <!-- Admin Dashboard Header -->
+    <div class="page-header admin-header">
+        <div class="container">
+            <h1>Admin <span class="gold-text">Dashboard</span></h1>
+            <p class="lead">Manage your barber shop business from a central location</p>
+        </div>
+    </div>
+
+    <!-- Admin Navigation -->
+    <div class="admin-navigation bg-dark">
+        <div class="container">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'dashboard' %}">Overview</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_appointments' %}">Appointments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_services' %}">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_stylists' %}">Stylists</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_reviews' %}">Reviews</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <section class="admin-content py-5">
+        <div class="container">
+            <!-- Stats Overview -->
+            <div class="row mb-5">
+                <div class="col-md-3 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h2 class="stat-number">{{ appointment_count }}</h2>
+                            <p class="stat-title">Appointments</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-cut"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h2 class="stat-number">{{ service_count }}</h2>
+                            <p class="stat-title">Services</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h2 class="stat-number">{{ stylist_count }}</h2>
+                            <p class="stat-title">Stylists</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h2 class="stat-number">{{ user_count }}</h2>
+                            <p class="stat-title">Users</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Appointments -->
+            <div class="row">
+                <div class="col-lg-12 mb-4">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3>Recent Appointments</h3>
+                            <a href="{% url 'dashboard_appointments' %}" class="btn btn-sm btn-outline-gold">View All</a>
+                        </div>
+                        <div class="admin-card-body">
+                            {% if recent_appointments %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Customer</th>
+                                                <th>Service</th>
+                                                <th>Stylist</th>
+                                                <th>Date & Time</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for appointment in recent_appointments %}
+                                                <tr>
+                                                    <td>{{ appointment.customer_name }}</td>
+                                                    <td>{% if appointment.service_name %}{{ appointment.service_name }}{% else %}Service #{{ appointment.service_id }}{% endif %}</td>
+                                                    <td>{% if appointment.stylist_name %}{{ appointment.stylist_name }}{% else %}Stylist #{{ appointment.stylist_id }}{% endif %}</td>
+                                                    <td>{{ appointment.date }} at {{ appointment.time }}</td>
+                                                    <td>
+                                                        <span class="badge {% if appointment.status == 'scheduled' %}bg-primary{% elif appointment.status == 'completed' %}bg-success{% elif appointment.status == 'canceled' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                                            {{ appointment.status|title }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">No recent appointments to display.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="quick-link-card">
+                        <div class="card-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <h4>Add New Service</h4>
+                        <p>Create a new service offering for your customers</p>
+                        <a href="{% url 'dashboard_services' %}" class="btn btn-gold">Add Service</a>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="quick-link-card">
+                        <div class="card-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <h4>Add New Stylist</h4>
+                        <p>Add a new barber or stylist to your team</p>
+                        <a href="{% url 'dashboard_stylists' %}" class="btn btn-gold">Add Stylist</a>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="quick-link-card">
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        <h4>Manage Appointments</h4>
+                        <p>View and manage all customer appointments</p>
+                        <a href="{% url 'dashboard_appointments' %}" class="btn btn-gold">View Appointments</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

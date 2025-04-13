@@ -1,0 +1,255 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1>Book Your <span class="gold-text">Appointment</span></h1>
+            <p class="lead">Schedule your next styling session with our expert hair stylists</p>
+        </div>
+    </div>
+
+    <!-- Booking Section -->
+    <section class="content-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 offset-lg-2">
+                    <div class="booking-card">
+                        <form method="post" id="booking-form">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.customer_name.id_for_label }}" class="form-label">Your Name</label>
+                                    {{ form.customer_name }}
+                                    {% if form.customer_name.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.customer_name.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.customer_phone.id_for_label }}" class="form-label">Phone Number</label>
+                                    {{ form.customer_phone }}
+                                    {% if form.customer_phone.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.customer_phone.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.service.id_for_label }}" class="form-label">Select Service</label>
+                                    {{ form.service }}
+                                    {% if form.service.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.service.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.stylist.id_for_label }}" class="form-label">Select Stylist</label>
+                                    {{ form.stylist }}
+                                    {% if form.stylist.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.stylist.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.date.id_for_label }}" class="form-label">Date</label>
+                                    {{ form.date }}
+                                    {% if form.date.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.date.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.time.id_for_label }}" class="form-label">Time</label>
+                                    {{ form.time }}
+                                    {% if form.time.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.time.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    <div id="time-loading" class="spinner-border spinner-border-sm text-gold mt-2 d-none" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div id="no-slots-message" class="text-danger mt-2 d-none">
+                                        No available time slots for this date. Please choose another date.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="{{ form.special_requests.id_for_label }}" class="form-label">Special Requests (optional)</label>
+                                {{ form.special_requests }}
+                            </div>
+                            <div class="booking-summary card mb-4 d-none" id="booking-summary">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-3">Booking Summary</h4>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <p><strong>Service:</strong> <span id="summary-service"></span></p>
+                                            <p><strong>Date:</strong> <span id="summary-date"></span></p>
+                                        </div>
+                                        <div class="col-6">
+                                            <p><strong>Stylist:</strong> <span id="summary-stylist"></span></p>
+                                            <p><strong>Time:</strong> <span id="summary-time"></span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-gold btn-lg">Book Appointment</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Business Hours Section -->
+    <section class="business-hours-section py-5 bg-light">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h2>Business <span class="gold-text">Hours</span></h2>
+                <p class="lead">When you can visit us</p>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="hours-card">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="hours-item">
+                                    <div class="day">Monday - Friday</div>
+                                    <div class="time">9:00 AM - 8:00 PM</div>
+                                </div>
+                                <div class="hours-item">
+                                    <div class="day">Saturday</div>
+                                    <div class="time">10:00 AM - 6:00 PM</div>
+                                </div>
+                                <div class="hours-item">
+                                    <div class="day">Sunday</div>
+                                    <div class="time">10:00 AM - 4:00 PM</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="contact-info">
+                                    <p><i class="fas fa-map-marker-alt me-2"></i> Satnampura Phagwara, 30, Nehru Nagar, Phagwara, Punjab 144401</p>
+                                    <p><i class="fas fa-envelope me-2"></i> info@trendzhairstyle.com</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateField = document.getElementById('{{ form.date.id_for_label }}');
+        const timeField = document.getElementById('{{ form.time.id_for_label }}');
+        const stylistField = document.getElementById('{{ form.stylist.id_for_label }}');
+        const serviceField = document.getElementById('{{ form.service.id_for_label }}');
+        const timeLoading = document.getElementById('time-loading');
+        const noSlotsMessage = document.getElementById('no-slots-message');
+        const bookingSummary = document.getElementById('booking-summary');
+        const summaryService = document.getElementById('summary-service');
+        const summaryDate = document.getElementById('summary-date');
+        const summaryStylest = document.getElementById('summary-stylist');
+        const summaryTime = document.getElementById('summary-time');
+
+        // Function to fetch available time slots
+        function fetchTimeSlots() {
+            const date = dateField.value;
+            const stylistId = stylistField.value;
+            const serviceId = serviceField.value;
+            
+            if (!date || !stylistId || !serviceId) {
+                return;
+            }
+            
+            // Show loading spinner
+            timeField.disabled = true;
+            timeLoading.classList.remove('d-none');
+            noSlotsMessage.classList.add('d-none');
+            
+            // Clear existing options except the first one
+            while (timeField.options.length > 1) {
+                timeField.remove(1);
+            }
+            
+            fetch('/api/time-slots/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    date: date,
+                    stylist_id: stylistId,
+                    service_id: serviceId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                timeLoading.classList.add('d-none');
+                
+                if (data.time_slots && data.time_slots.length > 0) {
+                    // Add time slots as options
+                    data.time_slots.forEach(slot => {
+                        const option = document.createElement('option');
+                        option.value = slot;
+                        option.textContent = slot;
+                        timeField.appendChild(option);
+                    });
+                    timeField.disabled = false;
+                } else {
+                    noSlotsMessage.classList.remove('d-none');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching time slots:', error);
+                timeLoading.classList.add('d-none');
+                noSlotsMessage.classList.remove('d-none');
+            });
+        }
+        
+        // Event listeners
+        dateField.addEventListener('change', fetchTimeSlots);
+        stylistField.addEventListener('change', fetchTimeSlots);
+        serviceField.addEventListener('change', fetchTimeSlots);
+        
+        // Update booking summary
+        function updateSummary() {
+            const serviceText = serviceField.options[serviceField.selectedIndex]?.text || '';
+            const stylistText = stylistField.options[stylistField.selectedIndex]?.text || '';
+            const dateValue = dateField.value ? new Date(dateField.value).toLocaleDateString() : '';
+            const timeValue = timeField.value;
+            
+            if (serviceText && stylistText && dateValue && timeValue) {
+                summaryService.textContent = serviceText;
+                summaryDate.textContent = dateValue;
+                summaryStylest.textContent = stylistText;
+                summaryTime.textContent = timeValue;
+                bookingSummary.classList.remove('d-none');
+            } else {
+                bookingSummary.classList.add('d-none');
+            }
+        }
+        
+        // Update summary when fields change
+        dateField.addEventListener('change', updateSummary);
+        timeField.addEventListener('change', updateSummary);
+        stylistField.addEventListener('change', updateSummary);
+        serviceField.addEventListener('change', updateSummary);
+    });
+</script>
+{% endblock %}

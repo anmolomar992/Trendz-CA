@@ -1,0 +1,182 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <!-- Admin Dashboard Header -->
+    <div class="page-header admin-header">
+        <div class="container">
+            <h1>Manage <span class="gold-text">Reviews</span></h1>
+            <p class="lead">Approve or reject customer reviews</p>
+        </div>
+    </div>
+
+    <!-- Admin Navigation -->
+    <div class="admin-navigation bg-dark">
+        <div class="container">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard' %}">Overview</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_appointments' %}">Appointments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_services' %}">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_stylists' %}">Stylists</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'dashboard_reviews' %}">Reviews</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <section class="admin-content py-5">
+        <div class="container">
+            <!-- Pending Reviews -->
+            <div class="row mb-5">
+                <div class="col-lg-12">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3>Pending Reviews</h3>
+                        </div>
+                        <div class="admin-card-body">
+                            {% with pending_reviews=reviews|dictsortreversed:"created_at"|rejectattr:"is_approved" %}
+                                {% if pending_reviews %}
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Customer</th>
+                                                    <th>Service</th>
+                                                    <th>Stylist</th>
+                                                    <th>Rating</th>
+                                                    <th>Comment</th>
+                                                    <th>Date</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for review in reviews %}
+                                                    {% if not review.is_approved %}
+                                                        <tr>
+                                                            <td>{{ review.username|default:"Anonymous" }}</td>
+                                                            <td>{{ review.service_name|default:"Unknown Service" }}</td>
+                                                            <td>{{ review.stylist_name|default:"Unknown Stylist" }}</td>
+                                                            <td>
+                                                                <div class="review-stars">
+                                                                    {% for i in "12345" %}
+                                                                        {% if forloop.counter <= review.rating %}
+                                                                            <i class="fas fa-star gold-text"></i>
+                                                                        {% else %}
+                                                                            <i class="far fa-star"></i>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </td>
+                                                            <td>{{ review.comment|truncatechars:50 }}</td>
+                                                            <td>{{ review.created_at|date:"Y-m-d" }}</td>
+                                                            <td>
+                                                                <div class="d-flex">
+                                                                    <form method="post" class="me-2">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="review_id" value="{{ review.id }}">
+                                                                        <input type="hidden" name="action" value="approve">
+                                                                        <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                                                    </form>
+                                                                    <form method="post">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="review_id" value="{{ review.id }}">
+                                                                        <input type="hidden" name="action" value="reject">
+                                                                        <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                                                    </form>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-info">No pending reviews to moderate.</div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Approved Reviews -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3>Approved Reviews</h3>
+                        </div>
+                        <div class="admin-card-body">
+                            {% with approved_reviews=reviews|dictsortreversed:"created_at"|selectattr:"is_approved" %}
+                                {% if approved_reviews %}
+                                    <div class="row">
+                                        {% for review in reviews %}
+                                            {% if review.is_approved %}
+                                                <div class="col-md-6 col-lg-4 mb-4">
+                                                    <div class="review-admin-card">
+                                                        <div class="review-admin-header">
+                                                            <div class="review-admin-rating">
+                                                                {% for i in "12345" %}
+                                                                    {% if forloop.counter <= review.rating %}
+                                                                        <i class="fas fa-star"></i>
+                                                                    {% else %}
+                                                                        <i class="far fa-star"></i>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </div>
+                                                            <div class="review-admin-date">
+                                                                {{ review.created_at|date:"F d, Y" }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="review-admin-comment">
+                                                            <p>{{ review.comment }}</p>
+                                                        </div>
+                                                        <div class="review-admin-meta">
+                                                            <p class="customer">
+                                                                <strong>Customer:</strong> {{ review.username|default:"Anonymous" }}
+                                                            </p>
+                                                            {% if review.service_name %}
+                                                                <p class="service">
+                                                                    <strong>Service:</strong> {{ review.service_name }}
+                                                                </p>
+                                                            {% endif %}
+                                                            {% if review.stylist_name %}
+                                                                <p class="stylist">
+                                                                    <strong>Stylist:</strong> {{ review.stylist_name }}
+                                                                </p>
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="review-admin-actions">
+                                                            <form method="post">
+                                                                {% csrf_token %}
+                                                                <input type="hidden" name="review_id" value="{{ review.id }}">
+                                                                <input type="hidden" name="action" value="reject">
+                                                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove Review</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-info">No approved reviews to display.</div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

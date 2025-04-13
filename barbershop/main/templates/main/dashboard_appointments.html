@@ -1,0 +1,199 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <!-- Admin Dashboard Header -->
+    <div class="page-header admin-header">
+        <div class="container">
+            <h1>Manage <span class="gold-text">Appointments</span></h1>
+            <p class="lead">View and update customer appointment details</p>
+        </div>
+    </div>
+
+    <!-- Admin Navigation -->
+    <div class="admin-navigation bg-dark">
+        <div class="container">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard' %}">Overview</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'dashboard_appointments' %}">Appointments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_services' %}">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_stylists' %}">Stylists</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_reviews' %}">Reviews</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <section class="admin-content py-5">
+        <div class="container">
+            <!-- Appointments Management -->
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3>All Appointments</h3>
+                            <a href="{% url 'booking' %}" class="btn btn-gold btn-sm">Create New</a>
+                        </div>
+                        <div class="admin-card-body">
+                            {% if appointments %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="appointments-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Customer</th>
+                                                <th>Phone</th>
+                                                <th>Service</th>
+                                                <th>Stylist</th>
+                                                <th>Date</th>
+                                                <th>Time</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for appointment in appointments %}
+                                                <tr>
+                                                    <td>{{ appointment.id|truncatechars:8 }}</td>
+                                                    <td>{{ appointment.customer_name }}</td>
+                                                    <td>{{ appointment.customer_phone }}</td>
+                                                    <td>{% if appointment.service_name %}{{ appointment.service_name }}{% else %}Service #{{ appointment.service_id }}{% endif %}</td>
+                                                    <td>{% if appointment.stylist_name %}{{ appointment.stylist_name }}{% else %}Stylist #{{ appointment.stylist_id }}{% endif %}</td>
+                                                    <td>{{ appointment.date }}</td>
+                                                    <td>{{ appointment.time }}</td>
+                                                    <td>
+                                                        <span class="badge {% if appointment.status == 'scheduled' %}bg-primary{% elif appointment.status == 'completed' %}bg-success{% elif appointment.status == 'canceled' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                                            {{ appointment.status|title }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="dropdown">
+                                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                Actions
+                                                            </button>
+                                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
+                                                                <li>
+                                                                    <form method="post" class="status-form">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+                                                                        <input type="hidden" name="status" value="completed">
+                                                                        <button type="submit" class="dropdown-item">Mark Completed</button>
+                                                                    </form>
+                                                                </li>
+                                                                <li>
+                                                                    <form method="post" class="status-form">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+                                                                        <input type="hidden" name="status" value="canceled">
+                                                                        <button type="submit" class="dropdown-item">Cancel Appointment</button>
+                                                                    </form>
+                                                                </li>
+                                                                <li>
+                                                                    <form method="post" class="status-form">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+                                                                        <input type="hidden" name="status" value="scheduled">
+                                                                        <button type="submit" class="dropdown-item">Mark Scheduled</button>
+                                                                    </form>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">No appointments to display.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Options -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3>Filter Options</h3>
+                        </div>
+                        <div class="admin-card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="filter-status" class="form-label">Filter by Status</label>
+                                    <select id="filter-status" class="form-select">
+                                        <option value="">All Statuses</option>
+                                        <option value="scheduled">Scheduled</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="canceled">Canceled</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="filter-date" class="form-label">Filter by Date</label>
+                                    <input type="date" id="filter-date" class="form-control">
+                                </div>
+                                <div class="col-md-4 mb-3 d-flex align-items-end">
+                                    <button id="apply-filters" class="btn btn-gold w-100">Apply Filters</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Simple filtering for appointments table
+        const filterStatus = document.getElementById('filter-status');
+        const filterDate = document.getElementById('filter-date');
+        const applyFiltersBtn = document.getElementById('apply-filters');
+        const table = document.getElementById('appointments-table');
+        
+        if (applyFiltersBtn && table) {
+            applyFiltersBtn.addEventListener('click', function() {
+                const rows = table.querySelectorAll('tbody tr');
+                const statusValue = filterStatus.value.toLowerCase();
+                const dateValue = filterDate.value;
+                
+                rows.forEach(row => {
+                    let showRow = true;
+                    
+                    // Status filter
+                    if (statusValue) {
+                        const statusCell = row.querySelector('td:nth-child(8) .badge');
+                        if (statusCell && !statusCell.textContent.toLowerCase().includes(statusValue)) {
+                            showRow = false;
+                        }
+                    }
+                    
+                    // Date filter
+                    if (dateValue) {
+                        const dateCell = row.querySelector('td:nth-child(6)');
+                        if (dateCell && dateCell.textContent !== dateValue) {
+                            showRow = false;
+                        }
+                    }
+                    
+                    // Show/hide row
+                    row.style.display = showRow ? '' : 'none';
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,283 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <!-- Admin Dashboard Header -->
+    <div class="page-header admin-header">
+        <div class="container">
+            <h1>Manage <span class="gold-text">Services</span></h1>
+            <p class="lead">Create and edit service offerings for your customers</p>
+        </div>
+    </div>
+
+    <!-- Admin Navigation -->
+    <div class="admin-navigation bg-dark">
+        <div class="container">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard' %}">Overview</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_appointments' %}">Appointments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'dashboard_services' %}">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_stylists' %}">Stylists</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_reviews' %}">Reviews</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <section class="admin-content py-5">
+        <div class="container">
+            <!-- Add New Service Form -->
+            <div class="row mb-5">
+                <div class="col-lg-12">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3 id="form-title">Add New Service</h3>
+                        </div>
+                        <div class="admin-card-body">
+                            <form method="post" id="service-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="form_type" value="service">
+                                <input type="hidden" name="service_id" id="service_id" value="">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.name.id_for_label }}" class="form-label">Service Name</label>
+                                        {{ form.name }}
+                                        {% if form.name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.name.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                                        {{ form.category }}
+                                        {% if form.category.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.category.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.price.id_for_label }}" class="form-label">Price (₹)</label>
+                                        {{ form.price }}
+                                        {% if form.price.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.price.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.duration.id_for_label }}" class="form-label">Duration (minutes)</label>
+                                        {{ form.duration }}
+                                        {% if form.duration.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.duration.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                                    {{ form.description }}
+                                    {% if form.description.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.description.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-4 form-check">
+                                    {{ form.is_active }}
+                                    <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                        Active (visible to customers)
+                                    </label>
+                                </div>
+                                <div class="d-flex">
+                                    <button type="submit" class="btn btn-gold me-2">Save Service</button>
+                                    <button type="button" id="reset-form" class="btn btn-outline-secondary">Reset</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services List -->
+            <div class="row mb-5">
+                <div class="col-lg-12">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3>All Services</h3>
+                        </div>
+                        <div class="admin-card-body">
+                            {% if services %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Category</th>
+                                                <th>Price</th>
+                                                <th>Duration</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for service in services %}
+                                                <tr>
+                                                    <td>{{ service.name }}</td>
+                                                    <td>{{ service.category_name|default:"Uncategorized" }}</td>
+                                                    <td>{{ service.formatted_price }}</td>
+                                                    <td>{{ service.duration }} min</td>
+                                                    <td>
+                                                        <span class="badge {% if service.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                                            {% if service.is_active %}Active{% else %}Inactive{% endif %}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary edit-service-btn" 
+                                                                data-id="{{ service.id }}"
+                                                                data-name="{{ service.name }}"
+                                                                data-description="{{ service.description }}"
+                                                                data-category="{{ service.category_id }}"
+                                                                data-price="{{ service.price }}"
+                                                                data-duration="{{ service.duration }}"
+                                                                data-active="{{ service.is_active|yesno:'true,false' }}">
+                                                            Edit
+                                                        </button>
+                                                        <a href="{% url 'delete_service' service.id %}" class="btn btn-sm btn-outline-danger delete-btn" 
+                                                          onclick="return confirmDelete('Are you sure you want to delete {{ service.name }}?')">
+                                                            Delete
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">No services found. Create your first service using the form above.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Management -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3>Add New Category</h3>
+                        </div>
+                        <div class="admin-card-body">
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="form_type" value="category">
+                                <div class="mb-3">
+                                    <label for="category_name" class="form-label">Category Name</label>
+                                    <input type="text" class="form-control" id="category_name" name="category_name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="category_description" class="form-label">Description (Optional)</label>
+                                    <textarea class="form-control" id="category_description" name="category_description" rows="3"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-gold">Add Category</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3>Categories</h3>
+                        </div>
+                        <div class="admin-card-body">
+                            {% if categories %}
+                                <div class="list-group">
+                                    {% for category in categories %}
+                                        <div class="list-group-item">
+                                            <h5 class="mb-1">{{ category.name }}</h5>
+                                            <p class="mb-1 text-muted small">{{ category.description|default:"No description" }}</p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">No categories found. Add your first category using the form.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('service-form');
+        const formTitle = document.getElementById('form-title');
+        const serviceIdField = document.getElementById('service_id');
+        const nameField = document.getElementById('{{ form.name.id_for_label }}');
+        const descriptionField = document.getElementById('{{ form.description.id_for_label }}');
+        const categoryField = document.getElementById('{{ form.category.id_for_label }}');
+        const priceField = document.getElementById('{{ form.price.id_for_label }}');
+        const durationField = document.getElementById('{{ form.duration.id_for_label }}');
+        const activeField = document.getElementById('{{ form.is_active.id_for_label }}');
+        const resetBtn = document.getElementById('reset-form');
+        const editBtns = document.querySelectorAll('.edit-service-btn');
+        
+        // Function to reset the form
+        function resetForm() {
+            formTitle.textContent = 'Add New Service';
+            serviceIdField.value = '';
+            form.reset();
+        }
+        
+        // Reset button click handler
+        if (resetBtn) {
+            resetBtn.addEventListener('click', resetForm);
+        }
+        
+        // Edit button click handlers
+        if (editBtns) {
+            editBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const name = this.getAttribute('data-name');
+                    const description = this.getAttribute('data-description');
+                    const category = this.getAttribute('data-category');
+                    const price = this.getAttribute('data-price');
+                    const duration = this.getAttribute('data-duration');
+                    const active = this.getAttribute('data-active') === 'true';
+                    
+                    // Populate form with service data
+                    formTitle.textContent = 'Edit Service';
+                    serviceIdField.value = id;
+                    nameField.value = name;
+                    descriptionField.value = description;
+                    categoryField.value = category;
+                    priceField.value = price;
+                    durationField.value = duration;
+                    activeField.checked = active;
+                    
+                    // Scroll to form
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}
