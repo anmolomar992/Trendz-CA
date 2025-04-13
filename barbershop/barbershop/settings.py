@@ -14,21 +14,19 @@ except ImportError:
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-q&kzhu^6j5%n#ioc!2nh+9z4!yj-0kbxf+0!0c9_3qt-v3p=j&')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() in ('true', 'yes', '1', 'y')
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 # Parse comma-separated list of allowed hosts from environment
 # Ensure Replit-specific domains are included
-ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1', '.replit.app', '.replit.dev', 
-                 'aa595309-1dc9-46d1-bba2-ddc6b916a4b0-00-3n7f2o282walg.picard.replit.dev']
-
-# CSRF settings - Ensure Replit domains are trusted
+ALLOWED_HOSTS = [
+    os.environ.get('RENDER_EXTERNAL_HOSTNAME', 'localhost'),
+    'localhost',
+    '127.0.0.1',
+]
 CSRF_TRUSTED_ORIGINS = [
-    'https://*.replit.dev',
-    'https://*.replit.app', 
-    'https://aa595309-1dc9-46d1-bba2-ddc6b916a4b0-00-3n7f2o282walg.picard.replit.dev'
 ]
 
 # Application definition
